@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheikh Moinuddin - Cybersecurity Specialist</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* Custom Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F172A; /* Deep Navy Blue */
+            color: #e5e5e5;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Preloader Animation Styles */
+        #preloader {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: #0F172A; /* Deep Navy Blue */
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+        }
+        #preloader.fade-out { opacity: 0; visibility: hidden; }
+
+        #terminal-window {
+            background-color: #0F172A; /* Deep Navy Blue background */
+            border: 1px solid #1A202C; /* Darker grayish-blue for border */
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); /* More visible black shadow */
+            opacity: 0;
+            transform: scale(0.8);
+            animation: openTerminal 0.5s 0.2s ease-out forwards;
+        }
+
+        @keyframes openTerminal {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #terminal-header {
+            background-color: #1A202C; /* Darker grayish-blue for terminal header */
+            padding: 8px 12px;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .terminal-buttons { display: flex; }
+        .terminal-button {
+            height: 12px; width: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .terminal-button.close { background-color: #ff5f56; }
+        .terminal-button.minimize { background-color: #ffbd2e; }
+        .terminal-button.maximize { background-color: #27c93f; }
+
+        .terminal-title {
+            color: #ccc;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #terminal-body {
+            padding: 1rem;
+            font-family: 'Roboto Mono', monospace;
+            color: #00ff00;
+            font-size: 1.1rem;
+            min-height: 80px;
+        }
+
+        .cursor {
+            display: inline-block;
+            background-color: #00ff00;
+            width: 9px;
+            height: 1.1em;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink {
+            from, to { background-color: transparent }
+            50% { background-color: #00ff00; }
+        }
+
+        #main-content { opacity: 0; visibility: hidden; transition: opacity 1s ease-in; }
+        #main-content.visible { opacity: 1; visibility: visible; }
+        
+        .content-wrapper { position: relative; z-index: 1; }
+        .font-mono { font-family: 'Roboto Mono', monospace; }
+        
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75); /* Deep Navy Blue rgba */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(44, 62, 80, 0.3); /* Lighter grayish-blue rgba for border */
+        }
+
+        .hero-border {
+            border-radius: 0.75rem; position: relative; background: #0F172A; /* Deep Navy Blue background */
+            padding: 2rem; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); /* Hero section black shadow (changed from green) */
+        }
+
+        .hero-border::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 0.75rem; padding: 2px;
+            background: linear-gradient(135deg, #00ff00, #004d00, #0F172A, #0F172A); /* Deep Navy Blue */
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            animation: rotate 4s linear infinite;
+        }
+        
+        /* New Dynamic Glitch Effect */
+        .glitch-text {
+            position: relative;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0F172A; /* Deep Navy Blue */
+            overflow: hidden;
+        }
+
+        .glitch-text::before {
+            left: 3px;
+            text-shadow: -2px 0 #00ff00;
+            animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
+        }
+
+        .glitch-text::after {
+            left: -3px;
+            text-shadow: -2px 0 #ff00ff, 2px 2px #00ff00;
+            animation: glitch-anim-2 3.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%); }
+            5% { clip-path: polygon(0 15%, 100% 15%, 100% 20%, 0 20%); }
+            10% { clip-path: polygon(0 40%, 100% 40%, 100% 45%, 0 45%); }
+            15% { clip-path: polygon(0 60%, 100% 60%, 100% 65%, 0 65%); }
+            20% { clip-path: polygon(0 85%, 100% 85%, 100% 90%, 0 90%); }
+            25% { clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%); }
+            30% { clip-path: polygon(0 70%, 100% 70%, 100% 75%, 0 75%); }
+            35% { clip-path: polygon(0 30%, 100% 30%, 100% 35%, 0 35%); }
+            40% { clip-path: polygon(0 10%, 100% 10%, 100% 15%, 0 15%); }
+            45% { clip-path: polygon(0 80%, 100% 80%, 100% 85%, 0 85%); }
+            50% { clip-path: polygon(0 25%, 100% 25%, 100% 30%, 0 30%); }
+            55% { clip-path: polygon(0 65%, 100% 65%, 100% 70%, 0 70%); }
+            60% { clip-path: polygon(0 90%, 100% 90%, 100% 95%, 0 95%); }
+            65% { clip-path: polygon(0 45%, 100% 45%, 100% 50%, 0 50%); }
+            70% { clip-path: polygon(0 18%, 100% 18%, 100% 23%, 0 23%); }
+            75% { clip-path: polygon(0 72%, 100% 72%, 100% 77%, 0 77%); }
+            80% { clip-path: polygon(0 33%, 100% 33%, 100% 38%, 0 38%); }
+            85% { clip-path: polygon(0 58%, 100% 58%, 100% 63%, 0 63%); }
+            90% { clip-path: polygon(0 88%, 100% 88%, 100% 93%, 0 93%); }
+            95% { clip-path: polygon(0 8%, 100% 8%, 100% 13%, 0 13%); }
+            100% { clip-path: polygon(0 52%, 100% 52%, 100% 57%, 0 57%); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip-path: polygon(0 5%, 100% 5%, 100% 10%, 0 10%); }
+            10% { clip-path: polygon(0 22%, 100% 22%, 100% 27%, 0 27%); }
+            20% { clip-path: polygon(0 48%, 100% 48%, 100% 53%, 0 53%); }
+            30% { clip-path: polygon(0 70%, 100% 70%, 100% 75%, 0 75%); }
+            40% { clip-path: polygon(0 92%, 100% 92%, 100% 97%, 0 97%); }
+            50% { clip-path: polygon(0 15%, 100% 15%, 100% 20%, 0 20%); }
+            60% { clip-path: polygon(0 35%, 100% 35%, 100% 40%, 0 40%); }
+            70% { clip-path: polygon(0 62%, 100% 62%, 100% 67%, 0 67%); }
+            80% { clip-path: polygon(0 80%, 100% 80%, 100% 85%, 0 85%); }
+            90% { clip-path: polygon(0 28%, 100% 28%, 100% 33%, 0 33%); }
+            100% { clip-path: polygon(0 55%, 100% 55%, 100% 60%, 0 60%); }
+        }
+
+        .typed-cursor { opacity: 1; animation: blink-main 0.7s infinite; }
+        @keyframes blink-main { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0F172A; } /* Deep Navy Blue */
+        ::-webkit-scrollbar-thumb { background-color: #00ff00; border-radius: 10px; border: 2px solid #0F172A; } /* Deep Navy Blue */
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.7); /* Deep Navy Blue rgba */
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.visible { opacity: 1; visibility: visible; }
+        .modal-content {
+            width: 90%; max-width: 500px; padding: 2rem; border-radius: 0.5rem;
+            transform: scale(0.9); transition: transform 0.3s;
+        }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .prose-dark { color: #e5e5e5; }
+        .prose-dark h1, .prose-dark h2, .prose-dark h3, .prose-dark h4 { color: #fff; }
+        .prose-dark p { margin-top: 0.5em; margin-bottom: 0.5em; }
+        .prose-dark ul { list-style-type: disc; padding-left: 1.5rem; }
+        .prose-dark li::marker { color: #00ff00; }
+        
+        .animate-on-scroll { opacity: 0; transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .slide-in-left { transform: translateX(-50px); }
+        .slide-in-right { transform: translateX(50px); }
+        .fade-in-up { transform: translateY(50px); }
+        .is-visible { opacity: 1; transform: translateX(0) translateY(0); }
+    </style>
+</head>
+<body class="antialiased">
+    
+    <div id="preloader">
+        <div id="terminal-window">
+            <div id="terminal-header">
+                <div class="terminal-buttons">
+                    <span class="terminal-button close"></span>
+                    <span class="terminal-button minimize"></span>
+                    <span class="terminal-button maximize"></span>
+                </div>
+                <div class="terminal-title">anonymous@kali: ~</div>
+            </div>
+            <div id="terminal-body">
+                <div>
+                    <span id="static-prompt"></span><span id="typed-command"></span><span id="command-cursor" class="cursor"></span>
+                </div>
+                <div>
+                    <span id="typed-output"></span><span id="output-cursor" class="cursor" style="display: none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div class="content-wrapper">
+            <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
+                <div class="container mx-auto px-4 py-4">
+                    <div class="flex justify-between items-center glass-card rounded-lg p-3 shadow-lg shadow-black/30">
+                        <a href="#" class="text-2xl font-bold font-mono tracking-wider text-white">SM<span class="text-green-500">.</span></a>
+                        <nav class="hidden md:flex space-x-8 items-center">
+                            <a href="#about" class="hover:text-green-500 transition-colors duration-300">About</a>
+                            <a href="#skills" class="hover:text-green-500 transition-colors duration-300">Skills</a>
+                            <a href="#projects" class="hover:text-green-500 transition-colors duration-300">Projects</a>
+                            <a href="#contact" class="bg-green-600 hover:bg-green-700 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-300">Contact</a>
+                        </nav>
+                        <div class="md:hidden">
+                            <button id="menu-btn" class="text-white focus:outline-none">
+                                <i class="fas fa-bars text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="mobile-menu" class="hidden md:hidden">
+                    <div class="container mx-auto px-4 pb-4">
+                        <div class="glass-card rounded-lg p-4 flex flex-col space-y-4 shadow-lg shadow-black/30">
+                            <a href="#about" class="hover:text-green-500 transition-colors duration-300">About</a>
+                            <a href="#skills" class="hover:text-green-500 transition-colors duration-300">Skills</a>
+                            <a href="#projects" class="hover:text-green-500 transition-colors duration-300">Projects</a>
+                            <a href="#contact" class="bg-green-600 hover:bg-green-700 text-black font-bold py-2 px-4 rounded-lg text-center transition-colors duration-300">Contact</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="container mx-auto px-4 pt-32">
+
+                <section id="home" class="text-center min-h-[60vh] flex items-center justify-center">
+                    <div class="hero-border w-full max-w-4xl">
+                        <div class="relative z-10">
+                            <h1 class="glitch-text text-4xl md:text-6xl font-black uppercase tracking-wider" data-text="Sheikh Moinuddin">Sheikh Moinuddin</h1>
+                            <p class="text-xl md:text-2xl font-mono mt-4 text-green-500">
+                                <span id="typed-text"></span><span class="typed-cursor">|</span>
+                            </p>
+                            <p class="mt-6 max-w-2xl mx-auto text-gray-300">
+                                Cybersecurity Specialist from Bangladesh. Fortifying digital defenses through offensive security strategies.
+                            </p>
+                            <div class="mt-8 flex justify-center space-x-4">
+                                <a href="https://github.com" target="_blank" class="text-gray-300 hover:text-green-500 transition-colors duration-300"><i class="fab fa-github fa-2x"></i></a>
+                                <a href="https://linkedin.com" target="_blank" class="text-gray-300 hover:text-green-500 transition-colors duration-300"><i class="fab fa-linkedin fa-2x"></i></a>
+                                <a href="https://twitter.com" target="_blank" class="text-gray-300 hover:text-green-500 transition-colors duration-300"><i class="fab fa-twitter fa-2x"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="about" class="py-24">
+                    <div class="grid md:grid-cols-5 gap-12 items-center">
+                        <div class="md:col-span-2 animate-on-scroll slide-in-left">
+                            <div class="glass-card p-6 rounded-lg shadow-lg shadow-black/60">
+                                <img src="https://i.postimg.cc/dt4bd73x/photo-6264819854532004035-x.jpg" alt="Sheikh Moinuddin" class="rounded-lg w-full h-auto shadow-lg shadow-green-900/50">
+                            </div>
+                        </div>
+                        <div class="md:col-span-3 animate-on-scroll slide-in-right">
+                            <h2 class="text-3xl font-bold mb-4">About Me</h2>
+                            <h3 class="text-xl font-mono text-green-500 mb-4">Gray Hat Hacker & Red Teamer</h3>
+                            <p class="mb-4 text-gray-300">I am a passionate and results-driven Cybersecurity Specialist based in Bangladesh, with a deep-seated fascination for the art of ethical hacking. My journey began with a curiosity to understand how systems could be broken, which evolved into a professional mission to secure them.</p>
+                            <p class="mb-4 text-gray-300">As a <span class="text-green-400 font-semibold">Red Teamer</span>, I simulate real-world cyberattacks to test and improve an organization's security posture. My <span class="text-gray-400 font-semibold">Gray Hat</span> perspective allows me to think like an adversary, uncovering vulnerabilities that others might miss, all while adhering to a strong ethical framework. I thrive on the challenge of outsmarting threats and strengthening digital fortresses.</p>
+                            <a href="#contact" class="inline-block bg-transparent border-2 border-green-600 text-green-600 font-bold py-2 px-6 rounded-lg hover:bg-green-600 hover:text-black transition-all duration-300">Let's Connect <i class="fas fa-arrow-right ml-2"></i></a>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="skills" class="py-24">
+                    <h2 class="text-3xl font-bold text-center mb-12 animate-on-scroll fade-in-up">My Arsenal</h2>
+                    <div id="skills-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                        <div class="glass-card p-6 rounded-lg text-center flex flex-col justify-between hover:border-green-500 transition-all duration-300 transform hover:-translate-y-2 animate-on-scroll fade-in-up shadow-lg shadow-black/60" data-skill="Penetration Testing"><div><i class="fas fa-shield-halved text-4xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Penetration Testing</h3></div><button class="explain-skill-btn mt-4 bg-gray-800/50 text-green-400 text-xs font-mono py-1 px-2 rounded hover:bg-green-900/50 transition-colors">✨ Explain</button></div>
+                        <div class="glass-card p-6 rounded-lg text-center flex flex-col justify-between hover:border-green-500 transition-all duration-300 transform hover:-translate-y-2 animate-on-scroll fade-in-up shadow-lg shadow-black/60" data-skill="Vulnerability Assessment"><div><i class="fas fa-bug text-4xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Vulnerability Assessment</h3></div><button class="explain-skill-btn mt-4 bg-gray-800/50 text-green-400 text-xs font-mono py-1 px-2 rounded hover:bg-green-900/50 transition-colors">✨ Explain</button></div>
+                        <div class="glass-card p-6 rounded-lg text-center flex flex-col justify-between hover:border-green-500 transition-all duration-300 transform hover:-translate-y-2 animate-on-scroll fade-in-up shadow-lg shadow-black/60" data-skill="Social Engineering"><div><i class="fas fa-user-secret text-4xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Social Engineering</h3></div><button class="explain-skill-btn mt-4 bg-gray-800/50 text-green-400 text-xs font-mono py-1 px-2 rounded hover:bg-green-900/50 transition-colors">✨ Explain</button></div>
+                        <div class="glass-card p-6 rounded-lg text-center flex flex-col justify-between hover:border-green-500 transition-all duration-300 transform hover:-translate-y-2 animate-on-scroll fade-in-up shadow-lg shadow-black/60" data-skill="Network Security"><div><i class="fas fa-network-wired text-4xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Network Security</h3></div><button class="explain-skill-btn mt-4 bg-gray-800/50 text-green-400 text-xs font-mono py-1 px-2 rounded hover:bg-green-900/50 transition-colors">✨ Explain</button></div>
+                        <div class="glass-card p-6 rounded-lg text-center flex flex-col justify-between hover:border-green-500 transition-all duration-300 transform hover:-translate-y-2 animate-on-scroll fade-in-up shadow-lg shadow-black/60" data-skill="Secure Code Review"><div><i class="fas fa-code text-4xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Secure Code Review</h3></div><button class="explain-skill-btn mt-4 bg-gray-800/50 text-green-400 text-xs font-mono py-1 px-2 rounded hover:bg-green-900/50 transition-colors">✨ Explain</button></div>
+                        <div class="glass-card p-6 rounded-lg text-center flex flex-col justify-between hover:border-green-500 transition-all duration-300 transform hover:-translate-y-2 animate-on-scroll fade-in-up shadow-lg shadow-black/60" data-skill="Malware Analysis"><div><i class="fas fa-microchip text-4xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Malware Analysis</h3></div><button class="explain-skill-btn mt-4 bg-gray-800/50 text-green-400 text-xs font-mono py-1 px-2 rounded hover:bg-green-900/50 transition-colors">✨ Explain</button></div>
+                        <div class="glass-card p-6 rounded-lg text-center flex flex-col justify-between hover:border-green-500 transition-all duration-300 transform hover:-translate-y-2 animate-on-scroll fade-in-up shadow-lg shadow-black/60" data-skill="Scripting (Python/Bash)"><div><i class="fas fa-terminal text-4xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Scripting (Python/Bash)</h3></div><button class="explain-skill-btn mt-4 bg-gray-800/50 text-green-400 text-xs font-mono py-1 px-2 rounded hover:bg-green-900/50 transition-colors">✨ Explain</button></div>
+                        <div class="glass-card p-6 rounded-lg text-center flex flex-col justify-between hover:border-green-500 transition-all duration-300 transform hover:-translate-y-2 animate-on-scroll fade-in-up shadow-lg shadow-black/60" data-skill="Cryptography"><div><i class="fas fa-lock text-4xl text-green-500 mb-4"></i><h3 class="text-lg font-bold">Cryptography</h3></div><button class="explain-skill-btn mt-4 bg-gray-800/50 text-green-400 text-xs font-mono py-1 px-2 rounded hover:bg-green-900/50 transition-colors">✨ Explain</button></div>
+                    </div>
+                </section>
+
+                <section id="projects" class="py-24">
+                    <h2 class="text-3xl font-bold text-center mb-12 animate-on-scroll fade-in-up">Red Team Engagements & Projects</h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="glass-card rounded-lg overflow-hidden group animate-on-scroll fade-in-up shadow-lg shadow-black/60"><div class="p-6"><h3 class="text-xl font-bold mb-2 text-green-400">Project: Chimera</h3><p class="text-gray-300 mb-4">A simulated enterprise-wide attack targeting a financial institution to identify critical security gaps...</p><div class="flex flex-wrap gap-2"><span class="bg-gray-800 text-green-400 text-xs font-mono py-1 px-2 rounded">Active Directory</span><span class="bg-gray-800 text-green-400 text-xs font-mono py-1 px-2 rounded">Phishing</span><span class="bg-gray-800 text-green-400 text-xs font-mono py-1 px-2 rounded">C2 Framework</span></div></div></div>
+                        <div class="glass-card rounded-lg overflow-hidden group animate-on-scroll fade-in-up shadow-lg shadow-black/60"><div class="p-6"><h3 class="text-xl font-bold mb-2 text-green-400">Project: Viper</h3><p class="text-gray-300 mb-4">Developed a custom payload delivery system to bypass advanced EDR solutions...</p><div class="flex flex-wrap gap-2"><span class="bg-gray-800 text-green-400 text-xs font-mono py-1 px-2 rounded">Python</span><span class="bg-gray-800 text-green-400 text-xs font-mono py-1 px-2 rounded">EDR Evasion</span><span class="bg-gray-800 text-green-400 text-xs font-mono py-1 px-2 rounded">Malware Dev</span></div></div></div>
+                        <div class="glass-card rounded-lg overflow-hidden group animate-on-scroll fade-in-up shadow-lg shadow-black/60"><div class="p-6"><h3 class="text-xl font-bold mb-2 text-green-400">Project: GhostNet</h3><p class="text-gray-300 mb-4">A physical and wireless penetration test on a corporate headquarters...</p><div class="flex flex-wrap gap-2"><span class="bg-gray-800 text-green-400 text-xs font-mono py-1 px-2 rounded">Wireless Security</span><span class="bg-gray-800 text-green-400 text-xs font-mono py-1 px-2 rounded">Physical Pentest</span><span class="bg-gray-800 text-green-400 text-xs font-mono py-1 px-2 rounded">Hak5</span></div></div></div>
+                    </div>
+                </section>
+
+                <section id="contact" class="py-24 animate-on-scroll fade-in-up">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold">Get In Touch</h2>
+                        <p class="text-green-500 font-mono mt-2">Open to collaborations and new opportunities.</p>
+                    </div>
+                    <div class="max-w-xl mx-auto mt-12">
+                           <div class="glass-card p-8 rounded-lg shadow-lg shadow-black/30">
+                                <form action="https://formsubmit.co/aronnoahmad12@gmail.com" method="POST">
+                                    <div class="mb-4"><label for="name" class="block mb-2 text-sm font-bold text-gray-300">Name</label><input type="text" id="name" name="name" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 transition-colors" required></div>
+                                    <div class="mb-4"><label for="email" class="block mb-2 text-sm font-bold text-gray-300">Email</label><input type="email" id="email" name="email" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 transition-colors" required></div>
+                                    <div class="mb-6"><label for="message" class="block mb-2 text-sm font-bold text-gray-300">Message</label><textarea id="message" name="message" rows="4" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 transition-colors" required></textarea></div>
+                                    <div class="text-center"><button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-black font-bold py-3 px-4 rounded-lg transition-colors duration-300">Send Message</button></div>
+                                </form>
+                           </div>
+                    </div>
+                </section>
+            </main>
+
+            <footer class="border-t border-gray-800 mt-20">
+                <div class="container mx-auto px-4 py-6 text-center text-gray-500"><p>&copy; 2025 Sheikh Moinuddin. All Rights Reserved.</p><p class="text-xs mt-2">Designed by Muhsin Azmal.</p></div>
+            </footer>
+        </div>
+    </div>
+    <div id="skill-modal" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-xl font-bold text-green-400"></h3>
+                <button id="modal-close-btn" class="text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <div id="modal-body" class="prose-dark"></div>
+        </div>
+    </div>
+
+
+    <script>	
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // --- প্রি-লোডার অ্যানিমেশন এবং কন্টেন্ট লোডিং ---
+            const preloader = document.getElementById('preloader');
+            const mainContent = document.getElementById('main-content');
+            const staticPromptEl = document.getElementById('static-prompt');
+            const typedCommandEl = document.getElementById('typed-command');
+            const typedOutputEl = document.getElementById('typed-output');
+            const commandCursor = document.getElementById('command-cursor');
+            const outputCursor = document.getElementById('output-cursor');
+            
+            const staticPromptText = 'anonymous@kali:~$ ';
+            const commandToType = 'whoami';
+            const outputText = 'sheikh_moinuddin';
+            
+            let i = 0, j = 0;
+
+            if (staticPromptEl) {
+                staticPromptEl.textContent = staticPromptText;
+            }
+
+            function typeCommand() {
+                if (i < commandToType.length) {
+                    if (typedCommandEl) typedCommandEl.textContent += commandToType.charAt(i);
+                    i++;
+                    setTimeout(typeCommand, 100);
+                } else {
+                    if(commandCursor) commandCursor.style.display = 'none';
+                    if(outputCursor) outputCursor.style.display = 'inline-block';
+                    setTimeout(typeOutput, 350);
+                }
+            }
+
+            function typeOutput() {
+                if (j < outputText.length) {
+                    if (typedOutputEl) typedOutputEl.textContent += outputText.charAt(j);
+                    j++;
+                    setTimeout(typeOutput, 150);
+                } else {
+                    if (outputCursor) outputCursor.style.display = 'none';
+                    setTimeout(() => {
+                        if (preloader) {
+                            preloader.classList.add('fade-out');
+                            mainContent.classList.add('visible');
+                            preloader.addEventListener('transitionend', () => preloader.remove());
+                        }
+                    }, 1000);
+                }
+            }
+            
+            // প্রি-লোডার টাইপিং অ্যানিমেশন শুরু করুন
+            if(preloader) {
+                setTimeout(typeCommand, 800);
+            } else {
+                if(mainContent) mainContent.classList.add('visible');
+            }
+
+
+            // --- স্ক্রল-ট্রিগারড অ্যানিমেশন ---
+            const scrollElements = document.querySelectorAll(".animate-on-scroll");
+            const elementInView = (el) => el.getBoundingClientRect().top <= (window.innerHeight || document.documentElement.clientHeight) / 1.25;
+            const displayScrollElement = (element) => element.classList.add("is-visible");
+            const handleScrollAnimation = () => scrollElements.forEach((el) => { if (elementInView(el)) displayScrollElement(el); });
+            handleScrollAnimation(); // লোডে প্রাথমিক চেক
+            window.addEventListener("scroll", handleScrollAnimation);
+
+            // --- হিরো সেকশন টাইপিং অ্যানিমেশন ---
+            const typedTextSpan = document.getElementById('typed-text');
+            const textArray = ["Cybersecurity Engineer.", "Red Teamer.", "Gray Hat Hacker."];
+            const typingDelay = 100;
+            const erasingDelay = 50;
+            const newTextDelay = 2000;
+            let textArrayIndex = 0, charIndex = 0;
+
+            function type() {
+                if (typedTextSpan && charIndex < textArray[textArrayIndex].length) {
+                    typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex++);
+                    setTimeout(type, typingDelay);
+                } else {
+                    setTimeout(erase, newTextDelay);
+                }
+            }
+
+            function erase() {
+                if (typedTextSpan && charIndex > 0) {
+                    typedTextSpan.textContent = textArray[textArrayIndex].substring(0, --charIndex);
+                    setTimeout(erase, erasingDelay);
+                } else {
+                    textArrayIndex = (textArrayIndex + 1) % textArray.length;
+                    setTimeout(type, 500);
+                }
+            }
+            
+            if (typedTextSpan) {
+                setTimeout(() => {
+                    type();
+                }, 1000);
+            }
+
+
+            // --- মোবাইল মেনু ---
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (menuBtn && mobileMenu) {
+                menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            }
+
+            // --- স্মুথ স্ক্রলিং ---
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetElement = document.querySelector(this.getAttribute('href'));
+                    if(targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            // --- স্কিল এক্সপ্লেনেশন মডাল ---
+            const skillExplanations = {
+                "Penetration Testing": "Penetration testing is like **hiring a professional burglar to test your home security.** I actively try to break into systems, networks, or applications to find weaknesses before malicious attackers do. It involves simulating real-world attacks to identify and exploit vulnerabilities, ensuring your digital defenses are robust.",
+                "Vulnerability Assessment": "Vulnerability assessment is like **a detailed home inspection for security flaws.** I systematically scan and analyze systems to identify potential weaknesses, misconfigurations, and known vulnerabilities. This process gives you a list of every potential entry point that needs fixing.",
+                "Social Engineering": "Social engineering is the **art of tricking people to gain access or information.** Think of me as a digital detective who understands human psychology to manipulate individuals into performing actions or divulging confidential data, bypassing technical defenses. It's about exploiting the 'human element' in security.",
+                "Network Security": "Network security is about **building an impenetrable fence around your digital property.** I design, implement, and maintain secure network infrastructures to protect data from unauthorized access, misuse, and denial-of-service attacks. This ensures your communication channels and data flow securely.",
+                "Secure Code Review": "Secure code review is like **proofreading a book for hidden errors that could compromise its integrity.** I meticulously examine source code to identify security vulnerabilities, logical flaws, and bad practices that attackers could exploit. This helps prevent bugs from becoming backdoors.",
+                "Malware Analysis": "Malware analysis is like **dissecting a digital virus to understand how it works.** I reverse-engineer malicious software (malware) to understand its capabilities, origins, and how to detect/defend against it. This knowledge is crucial for developing effective countermeasures.",
+                "Scripting (Python/Bash)": "Scripting with Python and Bash is like **having a versatile toolkit for automation and offense/defense.** I write custom scripts to automate tedious security tasks, develop specialized attack tools, analyze large datasets, and streamline incident response. It's about making security operations more efficient and effective.",
+                "Cryptography": "Cryptography is the **science of secret codes, like a digital lock and key system.** I understand and apply cryptographic principles to secure data communication, storage, and authentication. This ensures information remains confidential, integral, and authentic, even in hostile environments."
+            };
+
+            const skillModal = document.getElementById('skill-modal');
+            const skillsGrid = document.getElementById('skills-grid');
+            if (skillsGrid && skillModal) {
+                skillsGrid.addEventListener('click', (e) => {
+                    const button = e.target.closest('.explain-skill-btn');
+                    if (button) {
+                        const skillName = button.closest('[data-skill]').dataset.skill;
+                        document.getElementById('modal-title').textContent = skillName;
+                        // হার্ডকোডেড ব্যাখ্যা এখানে যোগ করা হলো
+                        const explanation = skillExplanations[skillName] || "Explanation not available for this skill.";
+                        document.getElementById('modal-body').innerHTML = marked.parse(explanation); // Markdown পার্স করা হচ্ছে
+                        skillModal.classList.add('visible');
+                    }
+                });
+            }
+
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            if (skillModal && modalCloseBtn) {
+                function closeModal() { skillModal.classList.remove('visible'); }
+                modalCloseBtn.addEventListener('click', closeModal);
+                skillModal.addEventListener('click', (e) => { if (e.target === skillModal) closeModal(); }); // মডাল কন্টেন্টের বাইরে ক্লিক করলে বন্ধ হবে
+            }
+        });
+    </script>
+</body>
+</html>
